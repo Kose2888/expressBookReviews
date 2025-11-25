@@ -6,12 +6,16 @@ const regd_users = express.Router();
 let users = [];
 
 const isValid = (username) => {
-  users.forEach(user => {
-    if (user.username === username) {
+  // Filter the users array for any user with the same username
+  let userswithsamename = users.filter((user) => {
+      return user.username === username;
+  });
+  // Return true if any user with the same username is found, otherwise false
+  if (userswithsamename.length > 0) {
       return true;
-    };
-    return false;
-  })
+  } else {
+      return false;
+  }
 }
 
 const authenticatedUser = (username, password) => {
@@ -47,12 +51,10 @@ regd_users.post("/login", (req, res) => {
     req.session.authorization = {
       accessToken, username
     }
-    return res.status(200).send("User successfully loggen in");
+    return res.status(200).send("User successfully logged in");
   } else {
     return res.status(208).json({ message: "Invalid Login. Check username and passsword." });
   }
-
-
 });
 
 // Add a book review
