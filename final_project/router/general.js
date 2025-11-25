@@ -44,9 +44,18 @@ public_users.get('/isbn/:isbn', function (req, res) {
  });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+public_users.get('/author/:author', function (req, res) {
+  let author = req.params.author;
+
+  let book = Object.values(books).filter(book => {
+    return book.author === author;
+  });
+
+  if (book.length > 0) {
+    res.send(JSON.stringify(book, null, 4));
+  } else {
+    res.status(400).json({ message: "The book with the Author: " + author + " does not exist." });
+  }
 });
 
 // Get all books based on title
