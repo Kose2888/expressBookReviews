@@ -72,6 +72,21 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   }
 });
 
+// Delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  let isbn = req.params.isbn;
+  let username = req.session.authorization.username;
+
+  console.log(username);
+  if (books[isbn] != null) {
+    delete books[isbn].reviews[username];
+    return res.status(200).send(JSON.stringify(books[isbn], null, 4));
+  } else {
+    return res.status(400).json({ message: "Error: The isbn " + isbn + "does not exist" });
+  }
+  
+});
+
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
 module.exports.users = users;
