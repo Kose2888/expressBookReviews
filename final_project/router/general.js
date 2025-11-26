@@ -25,25 +25,45 @@ public_users.post("/register", (req, res) => {
   }
 });
 
-const fetchBooks = new Promise((resolve, reject) => {
-  try {
-    resolve(books);
-  } catch (err) {
-    reject(err)
-  }
-});
+// Fetch all books
+function fetchBooks() {
+  return Promise.resolve(books);
+}
 
 // Get the book list available in the shop
 public_users.get('/', async (req, res) => {
   try {
-    const books = await fetchBooks;
+    const books = await fetchBooks();
     res.send(JSON.stringify(books, null, 4));
   } catch (err) {
     res.status(500).json({ error: "Something went wrong" });
   }
 });
 
+
+// Fetch a single book by ISBN
+function fetchBookByISBN(isbn) {
+  return new Promise((resolve, reject) => {
+    if (books[isbn] != null) {
+      resolve(books[isbn]);
+    } else {
+      reject(`Book with ISBN ${isbn} not found`);
+    }
+  });
+}
+
 // Get book details based on ISBN
+public_users.get('/isbn/:isbn', async (req, res) => {
+  try {
+    const isbn = req.params.isbn;
+    const book = await fetchBookByISBN(isbn);
+    res.send(JSON.stringify(books[isbn], null, 4));
+  } catch (err) {
+    res.status(400).json({ message: err });
+  }
+});
+
+/*
 public_users.get('/isbn/:isbn', function (req, res) {
   const isbn = req.params.isbn;
 
@@ -54,7 +74,7 @@ public_users.get('/isbn/:isbn', function (req, res) {
   }
 
  });
-  
+ */ 
 // Get book details based on author
 public_users.get('/author/:author', function (req, res) {
   let author = req.params.author;
