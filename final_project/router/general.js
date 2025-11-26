@@ -10,7 +10,7 @@ public_users.post("/register", (req, res) => {
   const password = req.body.password;
 
   // Check if both username and password are provided
-  if (username && password) {
+  if ((username && password) != null) {
     // Check if this user already exists
     if (!isValid(username)) {
       // Add the new user
@@ -19,6 +19,8 @@ public_users.post("/register", (req, res) => {
     } else {
       return res.status(404).json({ message: "User already exists!" });
     }
+  } else {
+    return res.status(400).json({ message: "User or password fields are empty." });
   }
 });
 
@@ -28,27 +30,56 @@ public_users.get('/', function (req, res) {
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+public_users.get('/isbn/:isbn', function (req, res) {
+  const isbn = req.params.isbn;
+
+  if (books[isbn] != null) {
+    res.send(JSON.stringify(books[isbn], null, 4));
+  } else {
+    res.status(400).json({ message: "Book with the isbn" + isbn + " cannot be found." });
+  }
+
  });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+public_users.get('/author/:author', function (req, res) {
+  let author = req.params.author;
+
+  let book = Object.values(books).filter(book => {
+    return book.author === author;
+  });
+
+  if (book.length > 0) {
+    res.send(JSON.stringify(book, null, 4));
+  } else {
+    res.status(400).json({ message: "The book with the Author: " + author + " does not exist." });
+  }
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  let title = req.params.title;
+
+  let book = Object.values(books).filter(book => {
+    return book.title === title;
+  });
+
+  if (book.length > 0) {
+    res.send(JSON.stringify(book, null, 4));
+  } else {
+    res.status(400).json({ message: "The book with the Title: " + title + " does not exist." });
+  }
 });
 
 //  Get book review
-public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+public_users.get('/review/:isbn', function (req, res) {
+  let isbn = req.params.isbn;
+
+  if (books[isbn] != null) {
+    res.send(JSON.stringify(books[isbn].reviews, null, 4));
+  } else {
+    res.status(400).json({ message: "Cannot find the review associated with the ISBN " + isbn });
+  }
 });
 
 module.exports.general = public_users;
