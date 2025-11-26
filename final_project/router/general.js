@@ -10,7 +10,7 @@ public_users.post("/register", (req, res) => {
   const password = req.body.password;
 
   // Check if both username and password are provided
-  if (username && password) {
+  if ((username && password) != null) {
     // Check if this user already exists
     if (!isValid(username)) {
       // Add the new user
@@ -19,6 +19,8 @@ public_users.post("/register", (req, res) => {
     } else {
       return res.status(404).json({ message: "User already exists!" });
     }
+  } else {
+    return res.status(400).json({ message: "User or password fields are empty." });
   }
 });
 
@@ -70,9 +72,14 @@ public_users.get('/title/:title',function (req, res) {
 });
 
 //  Get book review
-public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+public_users.get('/review/:isbn', function (req, res) {
+  let isbn = req.params.isbn;
+
+  if (books[isbn] != null) {
+    res.send(JSON.stringify(books[isbn].reviews, null, 4));
+  } else {
+    res.status(400).json({ message: "Cannot find the review associated with the ISBN " + isbn });
+  }
 });
 
 module.exports.general = public_users;
