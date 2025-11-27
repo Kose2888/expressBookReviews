@@ -40,7 +40,6 @@ public_users.get('/', async (req, res) => {
   }
 });
 
-
 // Fetch a single book by ISBN
 function fetchBookByISBN(isbn) {
   return new Promise((resolve, reject) => {
@@ -63,19 +62,31 @@ public_users.get('/isbn/:isbn', async (req, res) => {
   }
 });
 
-/*
-public_users.get('/isbn/:isbn', function (req, res) {
-  const isbn = req.params.isbn;
+// Fetch book details based on author
+function fetchBookByAuthor(author) {
+  return new Promise((resolve, reject) => {
+    let book = Object.values(books).filter(book => {
+      return book.author === author;
+    })
+    if (book.length > 0) {
+      resolve(book);
+    } else {
+      reject(`The book with the Author: ${author} does not exist`);
+    }
+  });
+};
 
-  if (books[isbn] != null) {
-    res.send(JSON.stringify(books[isbn], null, 4));
-  } else {
-    res.status(400).json({ message: "Book with the isbn" + isbn + " cannot be found." });
+// Get book deatails based on author
+public_users.get('/author/:author', async (req, res) => {
+  try {
+    const book = await fetchBookByAuthor(req.params.author);
+    res.send(JSON.stringify(book, null, 4));
+  } catch (err) {
+    res.status(400).json({ message: err})
   }
+});
 
- });
- */ 
-// Get book details based on author
+/* Get book details based on author
 public_users.get('/author/:author', function (req, res) {
   let author = req.params.author;
 
@@ -89,6 +100,7 @@ public_users.get('/author/:author', function (req, res) {
     res.status(400).json({ message: "The book with the Author: " + author + " does not exist." });
   }
 });
+*/
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
